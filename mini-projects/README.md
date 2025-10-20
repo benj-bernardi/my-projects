@@ -1,38 +1,17 @@
-#1 First Project: JavaScript Calculator
+# Mini Projects
 
-A simple calculator built with JavaScript that performs basic arithmetic operations: addition, subtraction, multiplication, and division.
-This project was created for learning purposes and demonstrates the use of functions, switch statements, and basic error handling.
+Collection of small scripts for practice and learning, including JavaScript and Shell script.
 
-Features
+## Projects Included
+- **JavaScript Calculator**: A simple calculator built with JavaScript to perform basic arithmetic operations (add, subtract, multiply, divide).
+- **Shell Calculator**: A simple calculator implemented as a shell script for basic arithmetic operations.
 
-Addition (+)
-Subtraction (-)
-Multiplication (x or *)
-Division (/) with zero-check error handling
-Returns results in a readable format (5 + 3 = 8)
+## How to Run
+### JavaScript Projects
+1. Navigate to the project folder.
+2. Run the script using Node.js: `node filename.js`
 
-Clean and easy-to-understand code
-
-How It Works:
-
-The calculator() function takes three parameters:
-num1: The first number
-num2: The second number
-opr: The operator (+, -, x, *, /)
-
-Depending on the operator, it performs the corresponding operation and returns the formatted result as a string.
-
-Example:
-console.log(calculator(10, 5, "+"));
-// Output: "10 + 5 = 15"
-
-console.log(calculator(8, 2, "/"));
-// Output: "8 / 2 = 4"
-
-Technologies Used
-JavaScript (ES6)
-
-How to Run:
-Copy the code into a .js file (e.g., calculator.js).
-Run it using Node.js or directly in your browser’s console.
-Call the calculator() function with your desired parameters.
+### Shell Script
+1. Navigate to the project folder.
+2. Make sure the script has execute permissions: `chmod +x filename.sh`
+3. Run the script in terminal: `./filename.sh`
