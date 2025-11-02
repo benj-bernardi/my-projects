@@ -124,7 +124,7 @@ class Warrior extends Character {
         super(name, health, attack);
         this.strength = strength;
     }
-    attack() {
+    attack1() {
         console.log(`${this.name} attacked the Goblin with a sword and dealt ${this.attack + this.strength} damage!`);
     }
 }
@@ -133,4 +133,4 @@ const newCharacter = new Mage("Merlin", 100, 30, 50);
 const newCharacter2 = new Warrior("Arthur", 150, 50, 40);
 
 newCharacter.castSpell();
-newCharacter2.attack();
+newCharacter2.attack1();
