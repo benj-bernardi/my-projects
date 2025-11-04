@@ -134,3 +134,54 @@ const newCharacter2 = new Warrior("Arthur", 150, 50, 40);
 
 newCharacter.castSpell();
 newCharacter2.attack1();
+
+//----------------------------------------------------
+
+class Calculator {
+    constructor(a, b) {
+        this.a = a;
+        this.b = b;
+    }
+
+    add() {
+        return `${this.a} + ${this.b} = ${this.a + this.b}`;
+    }
+
+    subtract() {
+        return `${this.a} - ${this.b} = ${this.a - this.b}`;
+    }
+
+    multiply() {
+        return `${this.a} x ${this.b} = ${this.a * this.b}`;
+    }
+
+    divide() {
+        if (this.b === 0) {
+            return "Cannot divide by zero!";
+        }
+        return `${this.a} / ${this.b} = ${this.a / this.b}`;
+    }
+
+    calculate(operation) {
+        switch (operation) {
+            case "+":
+                console.log(this.add());
+                break;
+            case "-":
+                console.log(this.subtract());
+                break;
+            case "*":
+                console.log(this.multiply());
+                break;
+            case "/":
+                console.log(this.divide());
+                break;
+            default:
+                console.log("Enter a valid operation.");
+        }
+    }
+}
+
+// Example usage
+const calculator1 = new Calculator(4, 5);
+calculator1.calculate("-");
