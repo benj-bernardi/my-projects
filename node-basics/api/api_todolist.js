@@ -35,3 +35,18 @@ app.post("/tasks", (req, res) => {
 
   return res.status(201).json(newTask);
 });
+
+// Delete a task by ID
+app.delete("/tasks/:id", (req, res) => {
+  const { id } = req.params;
+
+  const index = todoList.findIndex(task => task.id == id);
+
+  if (index === -1) {
+    return res.status(404).json({ error: "Task not found" });
+  }
+
+  todoList.splice(index, 1);
+
+  return res.status(200).json({ message: "Task deleted successfully" });
+});
