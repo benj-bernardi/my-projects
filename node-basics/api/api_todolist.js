@@ -50,3 +50,27 @@ app.delete("/tasks/:id", (req, res) => {
 
   return res.status(200).json({ message: "Task deleted successfully" });
 });
+
+// Update only specific fields of a task (PATCH)
+app.patch("/tasks/:id", (req, res) => {
+  const { id } = req.params;
+  const { task, done } = req.body;
+
+  // Find task index
+  const index = todoList.findIndex(t => t.id == id);
+
+  if (index === -1) {
+    return res.status(404).json({ error: "Task not found." });
+  }
+
+  // Update only the fields that were sent
+  if (task !== undefined) {
+    todoList[index].task = task;
+  }
+
+  if (done !== undefined) {
+    todoList[index].done = done;
+  }
+
+  return res.status(200).json(todoList[index]);
+});
