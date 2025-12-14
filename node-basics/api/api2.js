@@ -1,4 +1,5 @@
 // EXPRESS CRUD
+import { message } from "blessed";
 import express from "express";
 
 const app = express();
@@ -35,4 +36,27 @@ app.post("/users", (req, res) => {
     users.push(newUser);
 
     return res.status(201).json(newUser);
+});
+
+app.put("/users/:id", (req, res) => {
+    const { id } = req.params;
+    const { name, password } = req.body;
+
+    if (!name || !password) {
+        return res.status(400).json({ error: "Name and password are required." });
+    }
+
+    const index = users.findIndex(user => user.id == id);
+
+    if (index === -1) {
+        return res.status(404).json({ error: "User not found." });
+    }
+
+    users[index] = {
+        id: users[index].id,
+        name,
+        password
+    };
+
+    return res.status(200).json({ message: "User updated successfully.", user: users[index]});
 });
