@@ -3,16 +3,6 @@
 This folder contains practical exercises focused on JavaScript syntax, logic, and core concepts.  
 It is designed for beginners or anyone reviewing fundamental topics in JavaScript.
 
-## Directory Structure
-
-Each file represents a specific exercise covering topics such as:
-
-- Control structures (`if`, `switch`, loops)
-- Arrays and objects
-- Functions and scope
-- Error handling
-- Logic and algorithm exercises
-
 ## How to Run
 
 To run the exercises locally:
