@@ -8,7 +8,7 @@ app.use(express.json());
 let books = [];
 
 app.listen(PORT, () => {
-  console.log(`The server is running on port ${PORT}`);
+  console.log(`The server is running on http://localhost:3000/`);
 });
 
 // Create a new book
@@ -33,4 +33,19 @@ app.get('/books', (req, res) => {
 // Root route
 app.get('/', (req, res) => {
   res.send("Book API is online!");
+});
+
+// Delete route
+app.delete('/books/:id', (req, res) => {
+  const { id } = req.params;
+
+  const index = books.findIndex(b => b.id == id);
+
+  if (index === -1){
+    return res.status(400).json({ error: "Book not found" });
+  }
+
+  books.splice(index, 1);
+
+  return res.status(200).json({ message: "Book deleted successfully" });
 });
