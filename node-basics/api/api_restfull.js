@@ -53,7 +53,6 @@ app.delete("/users/:id", (req, res) => {
   res.status(200).json({ message: "User deleted successfully." });
 });
 
-
 // Update user by ID
 app.put("/users/:id", (req, res) => {
     const { id } = req.params;
