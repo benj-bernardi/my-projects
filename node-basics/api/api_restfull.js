@@ -8,7 +8,6 @@ const PORT = 3000;
 app.use(express.json());
 
 let users = [];
-let nextID = 1;
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
@@ -27,7 +26,7 @@ app.post('/users', (req, res) => {
     return res.status(400).json({ error: 'Name and email are required.' });
   }
 
-  const newUser = { id: nextID++, name, email };
+  const newUser = { id: Date.now(), name, email };
   users.push(newUser);
 
   return res.status(201).json(newUser);

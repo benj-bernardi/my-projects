@@ -1,5 +1,4 @@
 // EXPRESS CRUD
-import { message } from "blessed";
 import express from "express";
 
 const app = express();
@@ -60,3 +59,17 @@ app.put("/users/:id", (req, res) => {
 
     return res.status(200).json({ message: "User updated successfully.", user: users[index]});
 });
+
+app.delete("/users/:id", (req, res) => {
+    const { id } = req.body;
+
+    const index = users.findIndex(u => u.id == id);
+
+    if (index === -1){
+        return res.status(400).json({ error: "User not found" });
+    }
+
+    users.splice(index, 1);
+
+    res.status(200).json({ message: "User deleted successfully" });
+})
