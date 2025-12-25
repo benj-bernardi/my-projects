@@ -11,6 +11,16 @@ app.listen(PORT, () => {
   console.log(`The server is running on http://localhost:3000/`);
 });
 
+// Get all books
+app.get('/books', (req, res) => {
+  res.status(200).json(books);
+});
+
+// Root route
+app.get('/', (req, res) => {
+  res.send("Book API is online!");
+});
+
 // Create a new book
 app.post('/books', (req, res) => {
   const { author, title } = req.body;
@@ -25,14 +35,28 @@ app.post('/books', (req, res) => {
   return res.status(201).json({ newBook });
 });
 
-// Get all books
-app.get('/books', (req, res) => {
-  res.status(200).json(books);
-});
+// Update a book
+app.put('/books/:id', (req, res) => {
+  const { id } = req.params;
+  const { author, title } = req.body;
 
-// Root route
-app.get('/', (req, res) => {
-  res.send("Book API is online!");
+  if ( !author || !title ){
+    return res.status(400).json({ error: "Author and title are required" });
+  }
+
+  const index = books.findIndex(book => book.id == id);
+
+  if (index === -1){
+    return res.status(404).json({ error: "Book not found" });
+  }
+
+  books[index] = {
+        id: books[index].id,
+        author,
+        title
+    };
+
+  return res.status(200).json({ message: "Book updated successfully", book: books[index] });
 });
 
 // Delete route
