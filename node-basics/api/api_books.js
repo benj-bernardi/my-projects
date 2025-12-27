@@ -1,24 +1,29 @@
 import express from "express";
+import pool from "./database/db";
 
 const app = express();
 const PORT = 3000;
 
 app.use(express.json());
 
-// Postgress integration
-
 app.listen(PORT, () => {
   console.log(`The server is running on http://localhost:3000/`);
-});
-
-// Get all books
-app.get('/books', (req, res) => {
-  res.status(200).json(books);
 });
 
 // Root route
 app.get('/', (req, res) => {
   res.send("Book API is online!");
+});
+
+// Get all books
+app.get('/books', async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM books");
+    res.status(200).json(result.rows);
+  }
+  catch (err) {
+    res.status(500).json({ error: "Database error" });
+  }
 });
 
 // Create a new book
