@@ -5,7 +5,7 @@ const PORT = 3000;
 
 app.use(express.json());
 
-let books = [];
+// Postgress integration
 
 app.listen(PORT, () => {
   console.log(`The server is running on http://localhost:3000/`);
