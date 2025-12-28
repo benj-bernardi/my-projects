@@ -1,5 +1,5 @@
 import express from "express";
-import pool from "./database/db";
+import pool from "./database/db_api_books";
 
 const app = express();
 const PORT = 3000;
@@ -22,22 +22,29 @@ app.get('/books', async (req, res) => {
     res.status(200).json(result.rows);
   }
   catch (err) {
-    res.status(500).json({ error: "Database error" });
+    res.status(500).json({ error: "DATABASE error" });
   }
 });
 
 // Create a new book
-app.post('/books', (req, res) => {
-  const { author, title } = req.body;
+app.post('/books', async (req, res) => {
+  try {
+    const { author, title } = req.body;
 
-  if (!author || !title) {
-    return res.status(400).json({ error: "Author and title are required." });
+    if (!author || !title) {
+      return res.status(400).json({ error: "Author and title are required." });
+    }
+
+    const newBook = await pool.query(
+      "INSERT INTO books (author, title) VALUES ($1, $2) RETURNING *",
+      [author, title]
+    );
+
+    res.status(201).json(newBook.rows[0]);
   }
-
-  const newBook = { id: Date.now(), author, title };
-  books.push(newBook);
-
-  return res.status(201).json({ newBook });
+  catch (err) {
+    res.status(500).json({ error: "DATABASE error" });
+  }
 });
 
 // Update a book
