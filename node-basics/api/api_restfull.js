@@ -1,7 +1,7 @@
 // REST API Study
 
 import express from "express";
-import pool from "./database/db_api_restfull";
+import pool from "./database/db_api_restfull.js";
 
 const app = express();
 const PORT = 3000;
@@ -9,7 +9,7 @@ const PORT = 3000;
 app.use(express.json());
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log("The server is running on http://localhost:3000/");
 });
 
 // Root route:
@@ -24,25 +24,30 @@ app.get('/users', async (req, res) => {
     res.status(200).json(result.rows);
   }
   catch (err) {
+    console.log(err);
     res.status(500).json({ error: "DATABASE error" });
   }
 });
 
 // Create a new user:
-app.post('/users', (req, res) => {
-  const { name, email } = req.body;
+app.post('/users', async (req, res) => {
+  try {
+    const { name, email } = req.body;
 
-  if (!name || !email) {
-    return res.status(400).json({ error: 'Name and email are required.' });
+    if (!name || !email) {
+      return res.status(400).json({ error: 'Name and email are required.' });
+    }
+  
+    const newUser = await pool.query("INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *",
+    [name, email]);
+
+    res.status(201).json(newUser.rows[0]);
   }
-
-  const newUser = { id: Date.now(), name, email };
-  users.push(newUser);
-
-  return res.status(201).json(newUser);
+  catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "DATABASE error" });
+  }
 });
-
-
 
 // Delete user by id:
 app.delete("/users/:id", (req, res) => {
