@@ -38,7 +38,8 @@ app.post('/users', async (req, res) => {
       return res.status(400).json({ error: 'Name and email are required.' });
     }
   
-    const newUser = await pool.query("INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *",
+    const newUser = await pool.query(
+    "INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *",
     [name, email]);
 
     res.status(201).json(newUser.rows[0]);
@@ -50,41 +51,51 @@ app.post('/users', async (req, res) => {
 });
 
 // Delete user by id:
-app.delete("/users/:id", (req, res) => {
-  const { id } = req.params;
+app.delete("/users/:id", async (req, res) => {
+  try{ 
+    const { id } = req.params;
 
-  const index = users.findIndex(user => user.id == id);
+    const result = await pool.query("DELETE FROM users WHERE id = $1", [id]);
 
-  if (index === -1) {
-    return res.status(404).json({ error: "User not found." });
+    if (result.rowCount === 0){
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    res.status(200).json({ message: "User deleted successfully" });
   }
-
-  users.splice(index, 1);
-
-  res.status(200).json({ message: "User deleted successfully." });
+  catch (err){
+    console.log(err);
+    res.status(500).json({ error: "DATABASE error" });
+  }
 });
 
 // Update user by ID
-app.put("/users/:id", (req, res) => {
+app.put("/users/:id", async (req, res) => {
+  try {
     const { id } = req.params;
     const { name, email } = req.body;
 
-    if (!name || !email) {
-        return res.status(400).json({ error: "Name and email are required." });
+    if (!name || !email){
+      return res.status(400).json({ error: "Name and email are required" });
     }
 
-    const index = users.findIndex(user => user.id == id);
+    const index = await pool.query(
+    "SELECT * FROM users WHERE id = $1",
+    [id]);
 
-    if (index === -1) {
-        return res.status(404).json({ error: "User not found." });
+    if (index.rows.length === 0){
+      return res.status(404).json({ error: "User not found" });
     }
 
-    users[index] = {
-        id: users[index].id,
-        name,
-        email
-    };
+    const result = await pool.query(
+    "UPDATE users SET name = $1, email = $2 WHERE id = $3 RETURNING *",
+    [name, email, id]);
 
-    return res.status(200).json({ message: "User updated successfully.", user: users[index] });
+    res.status(200).json(result.rows[0]);
+  }
+  catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "DATABASE error" });
+  }
 });
 
