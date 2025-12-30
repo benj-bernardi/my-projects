@@ -1,47 +1,78 @@
-# API Projects
+## API Projects
 
-This directory is dedicated to the development and study of API projects built with **Node.js** and **Express.js**.  
+This directory is dedicated to the development and study of API projects built with Node.js, Express.js, and PostgreSQL.
 It serves as a workspace for learning, testing, and improving backend development skills through practical examples.
-
----
 
 ## Overview
 
-The main goal of this folder is to explore how APIs are structured, how routes and endpoints work, and how servers handle HTTP requests and responses.  
-Each project within this space is focused on a specific concept or experiment related to RESTful APIs, middleware, routing, or data handling.
+The main goal of this folder is to explore how APIs are structured, how routes and endpoints work, and how servers handle HTTP requests and responses.
 
 This folder may contain one or more independent projects, each designed for testing and educational purposes.
 
----
-
 ## Purpose
 
-The purpose of these studies is to understand:
-- How to set up a simple Express server.  
-- How to handle routes and responses.  
-- The basics of REST architecture and API endpoints.  
-- How to organize backend code efficiently.  
+Through these studies, you will learn to:
 
-Even if there’s currently only one active API here, the structure allows for future additions and experiments as learning continues.
+* Set up a simple Express server.
 
----
+* Handle routes and HTTP responses.
+
+* Understand REST architecture and API endpoints.
+
+* Integrate PostgreSQL for persistent data storage.
+
+* Organize backend code efficiently for maintainability.
+
+Even if there is currently only one active API here, the structure allows for future additions and experiments.
 
 ## Requirements
 
-Before running any of the projects here, make sure you have:
-- [Node.js](https://nodejs.org/) (version 18 or newer recommended)  
-- [npm](https://www.npmjs.com/) (comes with Node.js)  
+Before running any of the projects, make sure you have:
 
-To install dependencies for a project, use:
+* Node.js (version 18 or newer recommended)
+
+* npm (comes with Node.js)
+
+* PostgreSQL (version 14 or newer recommended)
+
+**1. Installation:**
+
+Clone this repository:
 ```bash
-npm install
+git clone <repository-url>
+cd <repository-folder> 
+```
+**2. Install dependencies:**
 
-Then start the server with:
+`npm install`
 
+**3. Set up environment variables:**
+
+Create a .env file in the root of the project with the following content:
 ```bash
-node filename.js
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=your_username
+DB_PASSWORD=your_password
+DB_NAME=your_database
+PORT=3000
+```
 
-## Notes 
+Replace the values with your PostgreSQL configuration.
+
+**4. Create the PostgreSQL database and tables:**
+
+Make sure your PostgreSQL database exists and has the necessary tables.
+You can use the example projects as reference to create them.
+
+**5. Start the server:**
+
+`node filename.js`
+
+## Notes
 
 All projects within this folder are experimental and made for learning purposes only.
-They may change over time as new concepts are tested or as new features are added.
+
+Database structure may change as new features and concepts are tested.
+
+Make sure PostgreSQL is running before starting any server.
