@@ -1,5 +1,5 @@
 import express from "express";
-import pool from "./database/db_api_books";
+import pool from "./database/db_api_books.js";
 
 const app = express();
 const PORT = 3000;
@@ -22,6 +22,7 @@ app.get('/books', async (req, res) => {
     res.status(200).json(result.rows);
   }
   catch (err) {
+    console.log(err);
     res.status(500).json({ error: "DATABASE error" });
   }
 });
@@ -43,45 +44,51 @@ app.post('/books', async (req, res) => {
     res.status(201).json(newBook.rows[0]);
   }
   catch (err) {
+    console.log(err);
     res.status(500).json({ error: "DATABASE error" });
   }
 });
 
 // Update a book
-app.put('/books/:id', (req, res) => {
-  const { id } = req.params;
-  const { author, title } = req.body;
+app.put('/books/:id', async (req, res) => {
+  try {
+    const { id } = req.params; 
+    const { author, title } = req.body; 
 
-  if ( !author || !title ){
-    return res.status(400).json({ error: "Author and title are required" });
+    if (!author || !title){
+      return res.status(400).json({ error: "Author and title are required" });
+    }
+    const booksExist = await pool.query("SELECT * FROM books WHERE id = $1", [id]);
+
+    if (booksExist.rows.length === 0){
+      return res.status(404).json({ error: "Book not found" });
+    }
+    
+    const updateBook = await pool.query("UPDATE books SET author = $1, title = $2 WHERE id = $3 RETURNING *", [author, title, id]);
+
+    res.status(204).send();
   }
-
-  const index = books.findIndex(book => book.id == id);
-
-  if (index === -1){
-    return res.status(404).json({ error: "Book not found" });
+  catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "DATABASE error" });
   }
-
-  books[index] = {
-        id: books[index].id,
-        author,
-        title
-    };
-
-  return res.status(200).json({ message: "Book updated successfully", book: books[index] });
 });
 
 // Delete route
-app.delete('/books/:id', (req, res) => {
-  const { id } = req.params;
+app.delete('/books/:id', async (req, res) => {
+  try { 
+    const { id } = req.params;
 
-  const index = books.findIndex(b => b.id == id);
+    const deleteBook = await pool.query("DELETE FROM books WHERE id = $1", [id]);
 
-  if (index === -1){
-    return res.status(400).json({ error: "Book not found" });
+    if (deleteBook.rowCount === 0){
+      return res.status(404).json({ error: "Book not found" });
+    }
+
+    res.status(204).send();
   }
-
-  books.splice(index, 1);
-
-  return res.status(200).json({ message: "Book deleted successfully" });
+  catch (err) { 
+    console.log(err);
+    res.status(500).json({ error: "DATABASE error"});
+  }
 });
