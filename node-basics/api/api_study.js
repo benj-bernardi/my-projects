@@ -53,13 +53,11 @@ app.put("/users/:id", async (req, res) => {
             return res.status(400).json({ error: "Name and password are required" });
         }
 
-        const index = await pool.query("SELECT * FROM users WHERE id = $1", [id]);
+        const updateUser = await pool.query("UPDATE users SET name = $1, password = $2 WHERE id = $3 RETURNING *", [name, password, id]);
 
-        if (index.rows.length === 0){
+        if (updateUser.rowCount === 0){
             return res.status(404).json({ error: "User not found" });
         }
-
-        const updateUser = await pool.query("UPDATE users SET name = $1, password = $2 WHERE id = $3 RETURNING *", [name, password, id]);
 
         res.status(204).send();
     }
@@ -85,4 +83,4 @@ app.delete("/users/:id", async (req, res) => {
         console.log(err);
         res.status(500).json({ error: "DATABASE error" });
     }
-})
+});
