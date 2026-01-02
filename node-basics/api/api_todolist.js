@@ -1,14 +1,13 @@
 import express from "express";
+import pool from "./database/db_api_todolist.js"
 
 const app = express();
 const PORT = 3000;
 
 app.use(express.json());
 
-const todoList = [];
-
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Tasks API is running at: http://localhost:3000/`);
 });
 
 // Home route
@@ -17,60 +16,30 @@ app.get("/", (req, res) => {
 });
 
 // List all tasks
-app.get("/tasks", (req, res) => {
-  res.status(200).json(todoList);
+app.get("/tasks", async (req, res) => {
+  try {
+    const getTasks = await pool.query("SELECT * FROM todolist");
+    res.status(200).json(getTasks.rows);
+  }
+  catch (err) { 
+    console.log(err);
+    res.status(500).json({ error: "DATABASE error" });
+  }
 });
+
+//-------------------------------------
 
 // Create a new task
 app.post("/tasks", (req, res) => {
-  const { task, done } = req.body;
-
-  if (!task || done === undefined) {
-    return res.status(400).json({ error: "task and done are required" });
-  }
-
-  const newTask = { id: Date.now(), task, done };
-
-  todoList.push(newTask);
-
-  return res.status(201).json(newTask);
+  //...
 });
 
 // Delete a task by ID
 app.delete("/tasks/:id", (req, res) => {
-  const { id } = req.params;
-
-  const index = todoList.findIndex(task => task.id == id);
-
-  if (index === -1) {
-    return res.status(404).json({ error: "Task not found" });
-  }
-
-  todoList.splice(index, 1);
-
-  return res.status(200).json({ message: "Task deleted successfully" });
+  //...
 });
 
 // Update only specific fields of a task (PATCH)
 app.patch("/tasks/:id", (req, res) => {
-  const { id } = req.params;
-  const { task, done } = req.body;
-
-  // Find task index
-  const index = todoList.findIndex(t => t.id == id);
-
-  if (index === -1) {
-    return res.status(404).json({ error: "Task not found." });
-  }
-
-  // Update only the fields that were sent
-  if (task !== undefined) {
-    todoList[index].task = task;
-  }
-
-  if (done !== undefined) {
-    todoList[index].done = done;
-  }
-
-  return res.status(200).json(todoList[index]);
+  //...
 });
