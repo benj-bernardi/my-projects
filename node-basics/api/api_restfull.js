@@ -61,7 +61,7 @@ app.delete("/users/:id", async (req, res) => {
       return res.status(404).json({ error: "User not found." });
     }
 
-    res.status(200).json({ message: "User deleted successfully" });
+    res.status(204).send();  
   }
   catch (err){
     console.log(err);
@@ -91,7 +91,7 @@ app.put("/users/:id", async (req, res) => {
     "UPDATE users SET name = $1, email = $2 WHERE id = $3 RETURNING *",
     [name, email, id]);
 
-    res.status(200).json(result.rows[0]);
+    res.status(204).send();
   }
   catch (err) {
     console.log(err);
