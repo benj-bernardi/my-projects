@@ -27,11 +27,23 @@ app.get("/tasks", async (req, res) => {
   }
 });
 
-//-------------------------------------
-
 // Create a new task
-app.post("/tasks", (req, res) => {
-  //...
+app.post("/tasks", async (req, res) => {
+  try {
+    const { title } = req.body;
+
+    if (!title){
+      return res.status(400).json({ error: "Title is required" });
+    }
+
+    const newTask = await pool.query("INSERT INTO todolist (title) VALUES ($1) RETURNING *", [title]);
+
+    res.status(201).json(newTask.rows[0]);
+  }
+  catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "DATABASE error" });
+  }
 });
 
 // Delete a task by ID
