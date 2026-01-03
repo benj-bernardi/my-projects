@@ -23,7 +23,7 @@ app.get('/books', async (req, res) => {
   }
   catch (err) {
     console.log(err);
-    res.status(500).json({ error: "DATABASE error" });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
@@ -45,7 +45,7 @@ app.post('/books', async (req, res) => {
   }
   catch (err) {
     console.log(err);
-    res.status(500).json({ error: "DATABASE error" });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
@@ -70,7 +70,7 @@ app.put('/books/:id', async (req, res) => {
   }
   catch (err) {
     console.log(err);
-    res.status(500).json({ error: "DATABASE error" });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
@@ -89,6 +89,32 @@ app.delete('/books/:id', async (req, res) => {
   }
   catch (err) { 
     console.log(err);
-    res.status(500).json({ error: "DATABASE error"});
+    res.status(500).json({ error: "Internal Server Error"});
+  }
+});
+
+// Update a book partially
+app.patch("/books/:id", async (req, res) => {
+  try {
+    const { id } = req.params; 
+    const { author, title } = req.body; 
+
+    if (author === undefined && title === undefined){
+      return res.status(400).json({ error: "Nothing to update" });
+    }
+
+    const updateBook = await pool.query(
+    "UPDATE books SET author = COALESCE($1, author), title = COALESCE($2, title) WHERE id = $3",
+    [author, title, id]);
+
+    if (updateBook.rowCount === 0){ 
+      return res.status(404).json({ error: "Book not found" });
+    }
+
+    res.status(204).send();
+  }
+  catch (err){
+    console.log(err); 
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
