@@ -47,11 +47,25 @@ app.post("/tasks", async (req, res) => {
 });
 
 // Delete a task by ID
-app.delete("/tasks/:id", (req, res) => {
-  //...
+app.delete("/tasks/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const deleteTask = await pool.query("DELETE FROM todolist WHERE id = $1", [id]);
+
+    if (deleteTask.rowCount === 0){
+      return res.status(404).json({ error: "Task not found" });
+    }
+
+    res.status(204).send();
+  }
+  catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "DATABASE error" });
+  }
 });
 
 // Update only specific fields of a task (PATCH)
-app.patch("/tasks/:id", (req, res) => {
-  //...
+app.patch("/tasks/:id", async (req, res) => {
+ //...
 });
