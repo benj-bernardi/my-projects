@@ -23,7 +23,7 @@ app.get("/tasks", async (req, res) => {
   }
   catch (err) { 
     console.log(err);
-    res.status(500).json({ error: "DATABASE error" });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
@@ -42,7 +42,7 @@ app.post("/tasks", async (req, res) => {
   }
   catch (err) {
     console.log(err);
-    res.status(500).json({ error: "DATABASE error" });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
@@ -61,11 +61,32 @@ app.delete("/tasks/:id", async (req, res) => {
   }
   catch (err) {
     console.log(err);
-    res.status(500).json({ error: "DATABASE error" });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
 // Update only specific fields of a task (PATCH)
 app.patch("/tasks/:id", async (req, res) => {
- //...
+  try {
+    const { id } = req.params;
+    const { title, completed } = req.body;
+
+    if (title === undefined && completed === undefined){
+      return res.status(400).json({ error: "Nothing to update"});
+    }
+
+    const updateTask = await pool.query(
+    "UPDATE todolist SET title = COALESCE($1, title), completed = COALESCE($2, completed) WHERE id = $3", 
+    [title, completed, id]);
+    
+    if (updateTask.rowCount === 0){
+      return res.status(404).json({ error: "Task not found" });
+    }
+
+    res.status(204).send();
+  }
+  catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
