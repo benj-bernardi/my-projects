@@ -46,26 +46,12 @@ cd <repository-folder>
 
 `npm install`
 
-**3. Set up environment variables:**
-
-Create a .env file in the root of the project with the following content:
-```bash
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=your_username
-DB_PASSWORD=your_password
-DB_NAME=your_database
-PORT=3000
-```
-
-Replace the values with your PostgreSQL configuration.
-
-**4. Create the PostgreSQL database and tables:**
+**3. Create the PostgreSQL database and tables:**
 
 Make sure your PostgreSQL database exists and has the necessary tables.
 You can use the example projects as reference to create them.
 
-**5. Start the server:**
+**4. Start the server:**
 
 `node filename.js`
 
