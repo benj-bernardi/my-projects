@@ -25,7 +25,7 @@ app.get('/users', async (req, res) => {
   }
   catch (err) {
     console.log(err);
-    res.status(500).json({ error: "DATABASE error" });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
@@ -46,7 +46,7 @@ app.post('/users', async (req, res) => {
   }
   catch (err) {
     console.log(err);
-    res.status(500).json({ error: "DATABASE error" });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
@@ -65,7 +65,7 @@ app.delete("/users/:id", async (req, res) => {
   }
   catch (err){
     console.log(err);
-    res.status(500).json({ error: "DATABASE error" });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
@@ -95,7 +95,32 @@ app.put("/users/:id", async (req, res) => {
   }
   catch (err) {
     console.log(err);
-    res.status(500).json({ error: "DATABASE error" });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
+//Update user by ID partilly
+app.patch("/users/:id", async (req, res) => {
+  try {
+    const { id } = req.params; 
+    const { name, email } = req.body; 
+
+    if (name === undefined && email === undefined){
+      return res.status(400).json({ error: "Nothing to Update" });
+    }
+
+    const updateUser = await pool.query(
+    "UPDATE users SET name = COALESCE($1, name), email = COALESCE($2, email) WHERE id = $3",
+    [name, email, id]);
+
+    if (updateUser.rowCount === 0){
+      return res.status(404).json({ error: "User not found"});
+    }
+
+    res.status(204).send();
+  }
+  catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+})
