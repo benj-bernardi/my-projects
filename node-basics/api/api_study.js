@@ -11,10 +11,12 @@ app.listen(PORT, () => {
     console.log("API is running at: http://localhost:3000/");
 });
 
+// Get Route
 app.get("/", (req, res) => {
     res.send("Welcome to the users API.");
 });
 
+// Get Route
 app.get("/users", async (req, res) => {
     try {
         const users = await pool.query("SELECT * FROM users");
@@ -22,10 +24,11 @@ app.get("/users", async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        res.status(500).json({ error: "DATABASE error" });
+        res.status(500).json({ error: "Internal Server Error" });
     }
 });
 
+// Post Route
 app.post("/users", async (req, res) => {
     try {
         const { name, password } = req.body;
@@ -40,10 +43,11 @@ app.post("/users", async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        res.status(500).json({ error: "DATABASE error" });
+        res.status(500).json({ error: "Internal Server Error"});
     }
 });
 
+// Update user by ID 
 app.put("/users/:id", async (req, res) => {
     try {
         const { id } = req.params;
@@ -63,10 +67,11 @@ app.put("/users/:id", async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        res.status(500).json({ error: "DATABASE error" });
+        res.status(500).json({ error: "Internal Server Error" });
     }
 });
 
+// Delete Route
 app.delete("/users/:id", async (req, res) => {
     try {
         const { id } = req.params;
@@ -81,6 +86,32 @@ app.delete("/users/:id", async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        res.status(500).json({ error: "DATABASE error" });
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+// Update user by ID partially
+app.patch("/users/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, password } = req.body;
+
+        if (name === undefined && password === undefined){
+            return res.status(400).json({ error: "Nothing to update" });
+        }
+
+        const updateUser = await pool.query(
+        "UPDATE users SET name = COALESCE($1, name), password = COALESCE($2, password) WHERE id = $3",
+        [name, password, id]);
+
+        if (updateUser.rowCount === 0){
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        res.status(204).send();
+    }
+    catch (err){
+        console.log(err);
+        res.status(500).json({ error: "Internal Server Error" });
     }
 });
