@@ -39,7 +39,7 @@ app.post("/users", async (req, res) => {
 
         const newUser = await pool.query("INSERT INTO users (name, password) VALUES ($1, $2) RETURNING *", [name, password]);
 
-        res.status(201).json(newUser.rows[0]);
+        res.status(201).json({ message: "User created successfully" });
     }
     catch (err) {
         console.log(err);
