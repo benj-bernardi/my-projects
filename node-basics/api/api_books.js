@@ -16,10 +16,10 @@ app.get('/', (req, res) => {
 });
 
 // Get all books
-app.get('/books', async (req, res) => {
+app.get("/books", async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM books");
-    res.status(200).json(result.rows);
+    const getBooks = await pool.query("SELECT * FROM books");
+    res.status(200).json(getBooks.rows);
   }
   catch (err) {
     console.log(err);
@@ -27,8 +27,28 @@ app.get('/books', async (req, res) => {
   }
 });
 
+// Get book by ID
+app.get("/books/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const getBookbyID = await pool.query(
+      "SELECT * FROM books WHERE id = $1", [id]);
+
+    if (getBookbyID.rowCount === 0){
+      return res.status(404).json({ error: "Book not found" });
+    }
+
+    res.status(200).json(getBookbyID.rows[0]);
+  }
+  catch (err){
+    console.log(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 // Create a new book
-app.post('/books', async (req, res) => {
+app.post("/books", async (req, res) => {
   try {
     const { author, title } = req.body;
 
@@ -50,7 +70,7 @@ app.post('/books', async (req, res) => {
 });
 
 // Update a book
-app.put('/books/:id', async (req, res) => {
+app.put("/books/:id", async (req, res) => {
   try {
     const { id } = req.params; 
     const { author, title } = req.body; 
@@ -75,7 +95,7 @@ app.put('/books/:id', async (req, res) => {
 });
 
 // Delete route
-app.delete('/books/:id', async (req, res) => {
+app.delete("/books/:id", async (req, res) => {
   try { 
     const { id } = req.params;
 
