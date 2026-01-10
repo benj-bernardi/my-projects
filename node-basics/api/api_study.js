@@ -28,6 +28,25 @@ app.get("/users", async (req, res) => {
     }
 });
 
+app.get("/users/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const getUserbyID = await pool.query(
+            "SELECT * FROM users WHERE id = $1", [id]);
+
+        if (getUserbyID.rowCount === 0){
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        res.status(200).json(getUserbyID.rows[0]);
+    }
+    catch (err){
+        console.log(err);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+})
+
 // Post Route
 app.post("/users", async (req, res) => {
     try {
