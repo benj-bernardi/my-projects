@@ -78,13 +78,14 @@ app.put("/books/:id", async (req, res) => {
     if (!author || !title){
       return res.status(400).json({ error: "Author and title are required" });
     }
-    const booksExist = await pool.query("SELECT * FROM books WHERE id = $1", [id]);
 
-    if (booksExist.rows.length === 0){
+    const updateBook = await pool.query(
+    "UPDATE books SET author = $1, title = $2 WHERE id = $3 RETURNING *", 
+    [author, title, id]);
+
+    if (updateBook.rowCount === 0){
       return res.status(404).json({ error: "Book not found" });
     }
-    
-    const updateBook = await pool.query("UPDATE books SET author = $1, title = $2 WHERE id = $3 RETURNING *", [author, title, id]);
 
     res.status(204).send();
   }
