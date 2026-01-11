@@ -98,17 +98,13 @@ app.put("/users/:id", async (req, res) => {
       return res.status(400).json({ error: "Name and email are required" });
     }
 
-    const index = await pool.query(
-    "SELECT * FROM users WHERE id = $1",
-    [id]);
+    const updateUser = await pool.query(
+      "UPDATE users SET name = $1, email = $2 WHERE id = $3 RETURNING *",
+      [name, email, id]);
 
-    if (index.rows.length === 0){
+    if (updateUser.rowCount === 0){
       return res.status(404).json({ error: "User not found" });
     }
-
-    const result = await pool.query(
-    "UPDATE users SET name = $1, email = $2 WHERE id = $3 RETURNING *",
-    [name, email, id]);
 
     res.status(204).send();
   }
