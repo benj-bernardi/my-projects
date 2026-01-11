@@ -1,5 +1,6 @@
 import express from "express";
 import pool from "./database/db_api_todolist.js"
+import { errorHandler } from "./middlewares/errorHandler.js";
 
 const app = express();
 const PORT = 3000;
@@ -16,19 +17,18 @@ app.get("/", (req, res) => {
 });
 
 // List all tasks
-app.get("/tasks", async (req, res) => {
+app.get("/tasks", async (req, res, next) => {
   try {
     const getTasks = await pool.query("SELECT * FROM todolist");
     res.status(200).json(getTasks.rows);
   }
   catch (err) { 
-    console.log(err);
-    res.status(500).json({ error: "Internal Server Error" });
+    next(err);
   }
 });
 
 // Create a new task
-app.post("/tasks", async (req, res) => {
+app.post("/tasks", async (req, res, next) => {
   try {
     const { title } = req.body;
 
@@ -41,13 +41,12 @@ app.post("/tasks", async (req, res) => {
     res.status(201).json(newTask.rows[0]);
   }
   catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "Internal Server Error" });
+   next(err);
   }
 });
 
 // Delete a task by ID
-app.delete("/tasks/:id", async (req, res) => {
+app.delete("/tasks/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
 
@@ -60,13 +59,12 @@ app.delete("/tasks/:id", async (req, res) => {
     res.status(204).send();
   }
   catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "Internal Server Error" });
+    next(err);
   }
 });
 
 // Update only specific fields of a task (PATCH)
-app.patch("/tasks/:id", async (req, res) => {
+app.patch("/tasks/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
     const { title, completed } = req.body;
@@ -86,7 +84,8 @@ app.patch("/tasks/:id", async (req, res) => {
     res.status(204).send();
   }
   catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "Internal Server Error" });
+    next(err);
   }
 });
+
+app.use(errorHandler);

@@ -2,6 +2,7 @@
 
 import express from "express";
 import pool from "./database/db_api_restfull.js";
+import { errorHandler } from "./middlewares/errorHandler.js";
 
 const app = express();
 const PORT = 3000;
@@ -18,18 +19,17 @@ app.get("/", (req, res) => {
 });
 
 // List all users:
-app.get("/users", async (req, res) => {
+app.get("/users", async (req, res, next) => {
   try {
     const result = await pool.query("SELECT * FROM users");
     res.status(200).json(result.rows);
   }
   catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "Internal Server Error" });
+    next(err);
   }
 });
 
-app.get("/users/:id", async (req, res) => {
+app.get("/users/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
 
@@ -43,13 +43,12 @@ app.get("/users/:id", async (req, res) => {
     res.status(200).json(getUserbyID.rows[0]);
   }
   catch (err){
-    console.log(err);
-    res.status(500).json({ error: "Internal Server Error" });
+    next(err);
   }
 })
 
 // Create a new user:
-app.post("/users", async (req, res) => {
+app.post("/users", async (req, res, next) => {
   try {
     const { name, email } = req.body;
 
@@ -64,13 +63,12 @@ app.post("/users", async (req, res) => {
     res.status(201).json(newUser.rows[0]);
   }
   catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "Internal Server Error" });
+    next(err);
   }
 });
 
 // Delete user by id:
-app.delete("/users/:id", async (req, res) => {
+app.delete("/users/:id", async (req, res, next) => {
   try{ 
     const { id } = req.params;
 
@@ -83,13 +81,12 @@ app.delete("/users/:id", async (req, res) => {
     res.status(204).send();  
   }
   catch (err){
-    console.log(err);
-    res.status(500).json({ error: "Internal Server Error" });
+    next(err);
   }
 });
 
 // Update user by ID
-app.put("/users/:id", async (req, res) => {
+app.put("/users/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
     const { name, email } = req.body;
@@ -109,13 +106,12 @@ app.put("/users/:id", async (req, res) => {
     res.status(204).send();
   }
   catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "Internal Server Error" });
+    next(err);
   }
 });
 
 //Update user by ID partilly
-app.patch("/users/:id", async (req, res) => {
+app.patch("/users/:id", async (req, res, next) => {
   try {
     const { id } = req.params; 
     const { name, email } = req.body; 
@@ -135,7 +131,8 @@ app.patch("/users/:id", async (req, res) => {
     res.status(204).send();
   }
   catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "Internal Server Error" });
+    next(err);
   }
 });
+
+app.use(errorHandler);

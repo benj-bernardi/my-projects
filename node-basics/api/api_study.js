@@ -1,6 +1,8 @@
 // EXPRESS CRUD
+
 import express from "express";
 import pool from  "./database/db_api_study.js";
+import { errorHandler } from "./middlewares/errorHandler.js";
 
 const app = express();
 const PORT = 3000;
@@ -17,38 +19,33 @@ app.get("/", (req, res) => {
 });
 
 // Get Route
-app.get("/users", async (req, res) => {
+app.get("/users", async (req, res, next) => {
     try {
         const users = await pool.query("SELECT * FROM users");
         res.status(200).json(users.rows);
-    }
-    catch (err) {
-        console.log(err);
-        res.status(500).json({ error: "Internal Server Error" });
+    } catch (err) {
+       next(err);
     }
 });
 
-app.get("/users/:id", async (req, res) => {
+app.get("/users/:id", async (req, res, next) => {
     try {
         const { id } = req.params;
 
-        const getUserbyID = await pool.query(
-            "SELECT * FROM users WHERE id = $1", [id]);
+        const getUserbyID = await pool.query("SELECT * FROM users WHERE id = $1", [id]);
 
         if (getUserbyID.rowCount === 0){
             return res.status(404).json({ error: "User not found" });
         }
 
         res.status(200).json(getUserbyID.rows[0]);
-    }
-    catch (err){
-        console.log(err);
-        res.status(500).json({ error: "Internal Server Error" });
+    } catch (err) {
+        next(err);
     }
 })
 
 // Post Route
-app.post("/users", async (req, res) => {
+app.post("/users", async (req, res, next) => {
     try {
         const { name, password } = req.body;
 
@@ -59,15 +56,13 @@ app.post("/users", async (req, res) => {
         const newUser = await pool.query("INSERT INTO users (name, password) VALUES ($1, $2) RETURNING *", [name, password]);
 
         res.status(201).json({ message: "User created successfully" });
-    }
-    catch (err) {
-        console.log(err);
-        res.status(500).json({ error: "Internal Server Error"});
+    } catch (err) {
+        next(err);
     }
 });
 
 // Update user by ID 
-app.put("/users/:id", async (req, res) => {
+app.put("/users/:id", async (req, res, next) => {
     try {
         const { id } = req.params;
         const { name, password } = req.body;
@@ -76,41 +71,37 @@ app.put("/users/:id", async (req, res) => {
             return res.status(400).json({ error: "Name and password are required" });
         }
 
-        const updateUser = await pool.query("UPDATE users SET name = $1, password = $2 WHERE id = $3 RETURNING *", [name, password, id]);
+        const updateUser = await pool.query("UPDATE users SET name = $1, password = $2 WHERE id = $3", [name, password, id]);
 
         if (updateUser.rowCount === 0){
             return res.status(404).json({ error: "User not found" });
         }
 
         res.status(204).send();
-    }
-    catch (err) {
-        console.log(err);
-        res.status(500).json({ error: "Internal Server Error" });
+    } catch (err) {
+        next(err);
     }
 });
 
 // Delete Route
-app.delete("/users/:id", async (req, res) => {
+app.delete("/users/:id", async (req, res, next) => {
     try {
         const { id } = req.params;
         
-        const result = await pool.query("DELETE FROM users WHERE id = $1", [id]);
+        const deleteUser = await pool.query("DELETE FROM users WHERE id = $1", [id]);
 
-        if (result.rowCount === 0){
+        if (deleteUser.rowCount === 0){
             return res.status(404).json({ error: "User not found" });
         }
 
         res.status(204).send();
-    }
-    catch (err) {
-        console.log(err);
-        res.status(500).json({ error: "Internal Server Error" });
+    } catch (err) {
+        next(err);
     }
 });
 
 // Update user by ID partially
-app.patch("/users/:id", async (req, res) => {
+app.patch("/users/:id", async (req, res, next) => {
     try {
         const { id } = req.params;
         const { name, password } = req.body;
@@ -128,9 +119,9 @@ app.patch("/users/:id", async (req, res) => {
         }
 
         res.status(204).send();
-    }
-    catch (err){
-        console.log(err);
-        res.status(500).json({ error: "Internal Server Error" });
+    } catch (err) {
+        next(err);
     }
 });
+
+app.use(errorHandler);

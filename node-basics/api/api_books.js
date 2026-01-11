@@ -1,5 +1,6 @@
 import express from "express";
 import pool from "./database/db_api_books.js";
+import { errorHandler } from "./middlewares/errorHandler.js";
 
 const app = express();
 const PORT = 3000;
@@ -16,19 +17,18 @@ app.get('/', (req, res) => {
 });
 
 // Get all books
-app.get("/books", async (req, res) => {
+app.get("/books", async (req, res, next) => {
   try {
     const getBooks = await pool.query("SELECT * FROM books");
     res.status(200).json(getBooks.rows);
   }
   catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "Internal Server Error" });
+   next(err);
   }
 });
 
 // Get book by ID
-app.get("/books/:id", async (req, res) => {
+app.get("/books/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
 
@@ -42,13 +42,12 @@ app.get("/books/:id", async (req, res) => {
     res.status(200).json(getBookbyID.rows[0]);
   }
   catch (err){
-    console.log(err);
-    res.status(500).json({ error: "Internal Server Error" });
+    next(err);
   }
 });
 
 // Create a new book
-app.post("/books", async (req, res) => {
+app.post("/books", async (req, res, next) => {
   try {
     const { author, title } = req.body;
 
@@ -64,13 +63,12 @@ app.post("/books", async (req, res) => {
     res.status(201).json(newBook.rows[0]);
   }
   catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "Internal Server Error" });
+   next(err);
   }
 });
 
 // Update a book
-app.put("/books/:id", async (req, res) => {
+app.put("/books/:id", async (req, res, next) => {
   try {
     const { id } = req.params; 
     const { author, title } = req.body; 
@@ -80,7 +78,7 @@ app.put("/books/:id", async (req, res) => {
     }
 
     const updateBook = await pool.query(
-    "UPDATE books SET author = $1, title = $2 WHERE id = $3 RETURNING *", 
+    "UPDATE books SET author = $1, title = $2 WHERE id = $3", 
     [author, title, id]);
 
     if (updateBook.rowCount === 0){
@@ -90,13 +88,12 @@ app.put("/books/:id", async (req, res) => {
     res.status(204).send();
   }
   catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "Internal Server Error" });
+    next(err);
   }
 });
 
 // Delete route
-app.delete("/books/:id", async (req, res) => {
+app.delete("/books/:id", async (req, res, next) => {
   try { 
     const { id } = req.params;
 
@@ -109,13 +106,12 @@ app.delete("/books/:id", async (req, res) => {
     res.status(204).send();
   }
   catch (err) { 
-    console.log(err);
-    res.status(500).json({ error: "Internal Server Error"});
+    next(err);
   }
 });
 
 // Update a book partially
-app.patch("/books/:id", async (req, res) => {
+app.patch("/books/:id", async (req, res, next) => {
   try {
     const { id } = req.params; 
     const { author, title } = req.body; 
@@ -135,7 +131,8 @@ app.patch("/books/:id", async (req, res) => {
     res.status(204).send();
   }
   catch (err){
-    console.log(err); 
-    res.status(500).json({ error: "Internal Server Error" });
+    next(err);
   }
 });
+
+app.use(errorHandler);
