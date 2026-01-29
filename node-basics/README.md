@@ -7,7 +7,7 @@ It serves as a collection of small scripts, study notes, and test files created 
 
 Each subfolder or file focuses on a specific concept:
 - **http/** — tests with Node's built-in HTTP module (creating basic servers, routing, etc.)
-- **api/** — experiments/study with REST APIs and JSON handling
+- **api-projects/** — experiments/study with REST APIs and JSON handling
 - **modules/** — learning about modules
 
 ## Purpose
